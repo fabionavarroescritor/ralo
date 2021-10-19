@@ -1,0 +1,83 @@
+import com.hamoid.*;
+VideoExport videoExport;
+
+PImage[] img = new PImage [4];
+
+int imc;
+
+void setup() {
+
+  videoExport = new VideoExport(this, "ralo2.mp4");
+  videoExport.setFrameRate(30);
+  videoExport.startMovie();
+
+  size(720, 720, P3D);
+  background(0);
+
+  img[0] = loadImage("ralo01.png");
+  img[0].resize(720, 720);
+
+  img[1] = loadImage("ralo02.png");
+  img[1].resize(720, 720);
+
+  img[2] = loadImage("ralo03.png");
+  img[2].resize(720, 720);
+
+  img[3] = loadImage("ralo04.png");
+  img[3].resize(720, 720);
+
+  img[imc].loadPixels();
+  loadPixels();
+}
+
+void draw() {
+
+  videoExport.saveFrame();
+
+  background(0);
+
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      color d = img[imc].get(x, y);
+
+      float dis = dist(x, y, mouseX, mouseY);
+      float maxdis = dist(0, 0, width/16, height/16);
+      float alphadis = map(dis, 0, maxdis, 255, 90);
+
+      int luz = x+y*img[imc].width;
+      float brilho;
+      brilho = red(img[imc].pixels[luz]);
+      float ajuste = 255*(maxdis-dis)/maxdis;
+      brilho += ajuste;
+      color c = color(brilho);
+      pixels[y*width+x] = c;
+
+      noStroke();
+      fill(c, alphadis, d);
+      rect(x, y, 2, 2);
+    }
+  }
+  updatePixels();
+}
+void keyPressed() {
+
+  switch(key) {
+
+  case 'a':
+    imc = 0;
+    break;
+  case 's':
+    imc = 1;
+    break;
+  case 'z':
+    imc = 2;
+    break;
+  case 'x':
+    imc = 3;
+    break;
+ case 'q':
+    videoExport.endMovie();
+    exit();
+    break;
+}
+}
